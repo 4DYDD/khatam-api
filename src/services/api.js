@@ -19,5 +19,13 @@ export const fetchUsers = () => {
   return api.get("/api/users");
 };
 
+export const deleteUser = (id, token) => {
+  return api.delete("/api/users/" + id, {
+    headers: {
+      "X-API-TOKEN": token,
+    },
+  });
+};
+
 // Export instance untuk digunakan di seluruh aplikasi
 export default api;

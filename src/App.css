@@ -45,3 +45,135 @@
 .animate-bounceku {
   animation: bounceku 0.5s infinite;
 }
+
+.animate-scale-up {
+  will-change: transform;
+  animation-name: animate-scale-up;
+  animation-duration: 150ms;
+  animation-fill-mode: forwards;
+}
+.animate-scale-down {
+  will-change: transform;
+  animation-name: animate-scale-down;
+  animation-duration: 150ms;
+  animation-fill-mode: forwards;
+}
+.animate-squish {
+  will-change: transform;
+  animation-name: animate-squish;
+  animation-duration: 100ms;
+  animation-fill-mode: forwards;
+}
+.animate-squish-barbar {
+  will-change: transform;
+  animation-name: animate-squish-barbar;
+  animation-duration: 150ms;
+  animation-fill-mode: both;
+}
+.animate-squish-barbar-reverse {
+  will-change: transform;
+  animation-name: animate-squish-barbar;
+  animation-duration: 150ms;
+  animation-fill-mode: forwards;
+  animation-direction: reverse;
+}
+.animate-squish-kalem {
+  will-change: all;
+  animation-name: animate-squish-kalem;
+  animation-duration: 200ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animate-scale-up {
+  /* === BIASA AJA === */
+  0% {
+    transform: scale(0);
+    bottom: -100%;
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    bottom: 0%;
+    opacity: 1;
+  }
+}
+
+@keyframes animate-scale-down {
+  /* === BIASA AJA === */
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes animate-squish {
+  /* === BIASA AJA === */
+  0% {
+    transform: scale(0.9, 0.95);
+  }
+  25% {
+    transform: scale(1.15, 1);
+  }
+  75% {
+    transform: scale(1, 1.15);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes animate-squish-barbar {
+  /* === AGAK BARBAR === */
+  0% {
+    transform: scale(0.9, 0.95) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+  25% {
+    transform: scale(1.15, 1) skew(-5deg, 0deg);
+    animation-timing-function: ease-in-out;
+  }
+  50% {
+    transform: scale(1.15, 1) skew(5deg, 0deg);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: scale(1, 1.15) skew(0deg, -5deg);
+    animation-timing-function: ease-in-out;
+  }
+  90% {
+    transform: scale(1.05, 1.05) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scale(1, 1) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes animate-squish-kalem {
+  /* === AGAK KALEM === */
+  0% {
+    transform: scale(0.9, 0.95) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+  25% {
+    transform: scale(1.15, 1) skew(-5deg, 0deg);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: scale(1, 1.15) skew(0deg, -5deg);
+    animation-timing-function: ease-in-out;
+  }
+  90% {
+    transform: scale(1.05, 1.05) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scale(1, 1) skew(0deg, 0deg);
+    animation-timing-function: ease-out;
+  }
+}
