@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
+import api, { fetchCSRFToken, fetchUsers } from "./services/api";
 
 function App() {
   const [datas, setDatas] = useState([]);
@@ -10,35 +11,62 @@ function App() {
     email: "",
     password: "",
   });
-  const [csrfToken, setCsrfToken] = useState("");
+  const [token, setToken] = useState("");
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState({});
 
   useEffect(() => {
     return () => {
       axios.get("http://api-nya.test/api/tes").then((response) => {
         setDatas(response.data);
       });
-      axios.get("http://api-nya.test/api/users").then((response) => {
+
+      fetchUsers().then((response) => {
         setUsers(response.data);
       });
-      axios.get("http://api-nya.test/api/csrf-token").then((response) => {
-        console.log("ini dari getter");
-        console.log(response.data.csrf_token);
-        setCsrfToken(response.data.csrf_token);
-      });
+
+      fetchCSRFToken()
+        .then((response) => {
+          console.log("token berhasil diambil");
+          console.log(response.data);
+          setToken(response.data.token);
+        })
+        .catch((err) => console.error("Gagal mengambil CSRF token:", err));
     };
   }, []);
 
   useEffect(() => {
-    console.log("ini dari testing");
-    console.log(csrfToken);
-  }, [csrfToken]);
+    if (token) {
+      console.log("kredensial lu :", token);
+    }
+  }, [token]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios.post("http://api-nya.test/api/users", formData).then((response) => {
-      console.log(response);
-    });
+    console.log(formData);
+
+    axios
+      .post("http://api-nya.test/api/users", formData, {
+        headers: {
+          "X-API-TOKEN": token,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        const success = response.data;
+        setSuccess(success);
+        setErrors({});
+        fetchUsers().then((response) => {
+          setUsers(response.data);
+        });
+      })
+      .catch(({ response }) => {
+        const errors = response.data.errors;
+        console.log(errors);
+        setErrors(errors);
+        setSuccess({});
+      });
   };
 
   const handleChange = (event) => {
@@ -50,7 +78,7 @@ function App() {
       <div className="flex-col min-h-screen text-3xl font-semibold tracking-wide flexc font-inter">
         <div>Halo Gais!</div>
         <br />
-        {/* {datas.length > 0 &&
+        {datas.length > 0 &&
           datas.map((value, index) => (
             <Fragment key={index}>
               <ul className="mb-10">
@@ -59,23 +87,30 @@ function App() {
                 <li className="text-sm">{value.description}</li>
               </ul>
             </Fragment>
-          ))} */}
+          ))}
 
-        {/* {users.length > 0 &&
-          users.map((value, index) => (
-            <Fragment key={`${index}-${value.id}`}>
-              <ul className="w-full mb-10 px-28">
-                <li className="text-base">{value.id}</li>
-                <li className="text-lg">{value.name}</li>
-                <li className="text-sm">{value.email}</li>
-              </ul>
-            </Fragment>
-          ))} */}
+        {users.length > 0 && (
+          <div className="w-[50rem] flexc">
+            <div className="grid grid-cols-2">
+              {users.map((value, index) => (
+                <Fragment key={`${index}-${value.id}`}>
+                  <ul className="w-[20rem] p-5 m-2 rounded-lg shadow shadow-gray-400 border border-gray-300">
+                    <li className="text-base">{value.id}</li>
+                    <li className="text-lg">{value.name}</li>
+                    <li className="text-sm text-gray-500">{value.email}</li>
+                  </ul>
+                </Fragment>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <form method="post" className="py-5" onSubmit={handleSubmit}>
-          <input type="hidden" name="_token" value={csrfToken} />
-
-          <div className="flex-col px-3 text-left flexc">
+        <form
+          method="post"
+          className="py-5 min-w-[30rem]"
+          onSubmit={handleSubmit}
+        >
+          <div className="flex-col px-3 text-left flexc !items-start mb-5">
             <label htmlFor="name" className="w-full text-lg">
               name
             </label>
@@ -83,12 +118,18 @@ function App() {
               type="text"
               id="name"
               name="name"
-              className="p-3 text-base text-gray-500"
+              className="w-full p-3 text-base text-gray-500 border border-gray-400 rounded-lg shadow outline-none shadow-gray-400 ring-none"
               placeholder="name"
               onChange={handleChange}
             />
+
+            {errors.name && (
+              <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
+                {errors.name}
+              </span>
+            )}
           </div>
-          <div className="flex-col px-3 text-left flexc">
+          <div className="flex-col px-3 text-left flexc !items-start mb-5">
             <label htmlFor="email" className="w-full text-lg">
               email
             </label>
@@ -96,12 +137,18 @@ function App() {
               type="email"
               id="email"
               name="email"
-              className="p-3 text-base text-gray-500"
+              className="w-full p-3 text-base text-gray-500 border border-gray-400 rounded-lg shadow outline-none shadow-gray-400 ring-none"
               placeholder="email"
               onChange={handleChange}
             />
+
+            {errors.email && (
+              <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
+                {errors.email}
+              </span>
+            )}
           </div>
-          <div className="flex-col px-3 text-left flexc">
+          <div className="flex-col px-3 text-left flexc !items-start mb-5">
             <label htmlFor="password" className="w-full text-lg">
               password
             </label>
@@ -109,10 +156,16 @@ function App() {
               type="password"
               id="password"
               name="password"
-              className="p-3 text-base text-gray-500"
+              className="w-full p-3 text-base text-gray-500 border border-gray-400 rounded-lg shadow outline-none shadow-gray-400 ring-none"
               placeholder="password"
               onChange={handleChange}
             />
+
+            {errors.password && (
+              <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
+                {errors.password}
+              </span>
+            )}
           </div>
 
           <button
@@ -121,6 +174,12 @@ function App() {
           >
             submit
           </button>
+
+          {success.message && (
+            <div className="text-base text-center text-green-500">
+              {success.message}
+            </div>
+          )}
         </form>
       </div>
     </>
