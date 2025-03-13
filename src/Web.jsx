@@ -32,6 +32,9 @@ function App() {
   const [sending, setSending] = useState(false);
   const [edit, setEdit] = useState(null);
 
+  let zeroEditField =
+    !formUpdateData.name && !formUpdateData.email && !formUpdateData.password;
+
   useEffect(() => {
     return () => {
       api.get("/api/tes").then((response) => {
@@ -66,7 +69,10 @@ function App() {
       password: "",
     });
 
+    setSending(false);
+
     setTimeout(() => {
+      setErrors({});
       setEdit(null);
     }, 300);
   };
@@ -109,6 +115,8 @@ function App() {
   const handleUpdate = (event, dom, id) => {
     event.preventDefault();
 
+    if (zeroEditField) return;
+
     console.log("update datanya!");
 
     setSending(true);
@@ -135,7 +143,8 @@ function App() {
         fetchUsers().then((response) => {
           console.log(responsenya);
           const success = responsenya.data;
-          setSuccess(success);
+          setSuccess({ ...success, type: "updated" });
+          setErrors({});
 
           setFormUpdateData({
             name: "",
@@ -154,9 +163,14 @@ function App() {
       .catch(({ response }) => {
         const errors = response.data.errors;
         console.log(errors);
-        setErrors(errors);
+        setFormUpdateData({
+          name: "",
+          email: "",
+          password: "",
+        });
+        setErrors({ ...errors, type: "notupdated" });
         setSuccess({});
-        setSending(false);
+        // setSending(false);
       });
   };
 
@@ -186,7 +200,7 @@ function App() {
       .catch(({ response }) => {
         const errors = response.data.errors;
         console.log(errors);
-        setErrors(errors);
+        setErrors({ ...errors, type: "notsubmitted" });
         setSuccess({});
         setSending(false);
       });
@@ -204,9 +218,9 @@ function App() {
     });
   };
 
-  // useEffect(() => {
-  //   console.log(formUpdateData);
-  // }, [formUpdateData]);
+  useEffect(() => {
+    console.log(formUpdateData);
+  }, [formUpdateData]);
 
   return (
     <>
@@ -246,33 +260,56 @@ function App() {
                     {edit && edit == value.id && (
                       <div
                         id={`edit-${index}-${value.id}`}
-                        className="w-full h-full bg-white transcenter flexc z-[2] animate-slide-down"
+                        className="w-full h-full overflow-y-auto bg-white transcenter flexc z-[2] animate-slide-down"
                       >
                         {/*  */}
 
                         <form
                           onSubmit={(event) => {
+                            if (zeroEditField) return;
                             handleUpdate(
                               event,
                               `${index}-${value.id}`,
                               value.id
                             );
                           }}
-                          className="flex-col gap-3 flexc"
+                          className="flex-col gap-3 mt-10 mb-5 flexc"
                         >
-                          <div className="w-full gap-3 text-sm flexc">
+                          {/*  */}
+
+                          <div
+                            className={`w-full gap-3 text-sm flexc  ${
+                              edit &&
+                              edit == value.id &&
+                              errors &&
+                              errors.type === "notupdated" &&
+                              "mt-20"
+                            }`}
+                          >
                             <label className="flex-[2]" htmlFor="name">
                               Name
                             </label>
                             <input
-                              className="text-gray-600 px-3 py-1.5 rounded shadow outline-none ring-0 shadow-gray-400"
+                              className="text-gray-600  px-3 py-1.5 rounded shadow outline-none ring-0 shadow-gray-400"
                               type="text"
                               name="name"
                               id="name"
+                              value={formUpdateData.name || ""}
                               placeholder={value.name}
                               onChange={handleChangeUpdate}
                             />
                           </div>
+
+                          {edit &&
+                            edit == value.id &&
+                            errors &&
+                            errors.type === "notupdated" &&
+                            errors.name && (
+                              <div className="w-full mb-2 text-xs font-bold text-red-500 text-start">
+                                {errors.name}
+                              </div>
+                            )}
+
                           <div className="w-full gap-3 text-sm flexc">
                             <label className="flex-[2]" htmlFor="email">
                               email
@@ -282,27 +319,58 @@ function App() {
                               type="email"
                               name="email"
                               id="email"
+                              value={formUpdateData.email || ""}
                               placeholder={value.email}
                               onChange={handleChangeUpdate}
                             />
                           </div>
+
+                          {edit &&
+                            edit == value.id &&
+                            errors &&
+                            errors.type === "notupdated" &&
+                            errors.email && (
+                              <div className="w-full mb-2 text-xs font-bold text-red-500 text-start">
+                                {errors.email}
+                              </div>
+                            )}
+
                           <div className="w-full gap-3 text-sm flexc">
                             <label className="flex-[2]" htmlFor="password">
                               Password
                             </label>
+                            {/*  */}
+
                             <input
-                              className="text-gray-600 px-3 py-1.5 rounded shadow outline-none ring-0 shadow-gray-400"
-                              type="password"
+                              className={`z-[1] relative text-gray-600 px-3 py-1.5 rounded shadow outline-none ring-0 shadow-gray-400`}
+                              type="text"
                               name="password"
                               id="password"
-                              placeholder="your new password..."
+                              value={formUpdateData.password || ""}
+                              placeholder={`your new password...`}
                               onChange={handleChangeUpdate}
                             />
+
+                            {/*  */}
                           </div>
-                          <div className="flexc !justify-end w-full mt-2">
+
+                          {edit &&
+                            edit == value.id &&
+                            errors &&
+                            errors.type === "notupdated" &&
+                            errors.password && (
+                              <div className="w-full mb-2 text-xs font-bold text-red-500 text-start">
+                                {errors.password}
+                              </div>
+                            )}
+
+                          <div className="flexc !justify-end w-full mt-2 py-3">
                             <ButtonSuccess
+                              disabled={zeroEditField}
                               type={`submit`}
-                              className={`text-sm mx-2`}
+                              className={`text-sm mx-2 ${
+                                zeroEditField && "!opacity-50"
+                              }`}
                             >
                               update
                             </ButtonSuccess>
@@ -333,12 +401,17 @@ function App() {
 
                     <div className="py-5 px-10 h-[14rem] flexc !items-start gap-1 flex-col">
                       <li className="text-base">{value.id}</li>
-                      <li className="text-lg">{value.name}</li>
+                      <li className="text-lg">
+                        {value.name.length > 20
+                          ? value.name.substring(0, 20) + "..."
+                          : value.name}
+                      </li>
                       <li className="text-sm text-gray-500">{value.email}</li>
                       <div className="w-full mt-5 flexc !justify-end gap-3">
                         <ButtonWarning
                           onClick={(event) => {
                             setEdit(value.id);
+                            setSending(true);
                           }}
                           disabled={sending}
                           className={`text-sm font-bold ${
@@ -388,6 +461,8 @@ function App() {
           className="py-5 min-w-[30rem]"
           onSubmit={handleSubmit}
         >
+          {/*  */}
+
           <div className="flex-col px-3 text-left flexc !items-start mb-5">
             <label htmlFor="name" className="w-full text-lg">
               name
@@ -401,7 +476,7 @@ function App() {
               onChange={handleChange}
             />
 
-            {errors && errors.name && (
+            {errors && errors.type === "notsubmitted" && errors.name && (
               <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
                 {errors.name}
               </span>
@@ -420,7 +495,7 @@ function App() {
               onChange={handleChange}
             />
 
-            {errors && errors.email && (
+            {errors && errors.type === "notsubmitted" && errors.email && (
               <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
                 {errors.email}
               </span>
@@ -439,7 +514,7 @@ function App() {
               onChange={handleChange}
             />
 
-            {errors && errors.password && (
+            {errors && errors.type === "notsubmitted" && errors.password && (
               <span className="w-full px-3 mt-1 text-sm text-left text-red-500">
                 {errors.password}
               </span>
