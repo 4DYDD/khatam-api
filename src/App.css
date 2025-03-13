@@ -46,6 +46,20 @@
   animation: bounceku 0.5s infinite;
 }
 
+.animate-slide-up {
+  will-change: all;
+  animation-name: animate-slide-up;
+  animation-duration: 300ms;
+  animation-fill-mode: forwards;
+}
+
+.animate-slide-down {
+  will-change: all;
+  animation-name: animate-slide-down;
+  animation-duration: 300ms;
+  animation-fill-mode: forwards;
+}
+
 .animate-scale-up {
   will-change: transform;
   animation-name: animate-scale-up;
@@ -82,6 +96,26 @@
   animation-name: animate-squish-kalem;
   animation-duration: 200ms;
   animation-fill-mode: forwards;
+}
+
+@keyframes animate-slide-up {
+  /* === BIASA AJA === */
+  0% {
+    top: 50%;
+  }
+  100% {
+    top: -50%;
+  }
+}
+
+@keyframes animate-slide-down {
+  /* === BIASA AJA === */
+  0% {
+    top: -50%;
+  }
+  100% {
+    top: 50%;
+  }
 }
 
 @keyframes animate-scale-up {

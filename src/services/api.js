@@ -19,6 +19,14 @@ export const fetchUsers = () => {
   return api.get("/api/users");
 };
 
+export const updateUser = (id, formData, token) => {
+  return api.put("/api/users/" + id, formData, {
+    headers: {
+      "X-API-TOKEN": token,
+    },
+  });
+};
+
 export const deleteUser = (id, token) => {
   return api.delete("/api/users/" + id, {
     headers: {
