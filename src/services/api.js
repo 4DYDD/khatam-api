@@ -11,12 +11,20 @@ const api = axios.create({
 });
 
 // Fungsi untuk mengambil CSRF token
-export const fetchCSRFToken = () => {
+export const fetchToken = () => {
   return api.get("/api/csrf-token");
 };
 
 export const fetchUsers = () => {
   return api.get("/api/users");
+};
+
+export const addUser = (formData, token) => {
+  return api.post("/api/users", formData, {
+    headers: {
+      "X-API-TOKEN": token,
+    },
+  });
 };
 
 export const updateUser = (id, formData, token) => {

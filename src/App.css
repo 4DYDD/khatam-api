@@ -46,6 +46,10 @@
   animation: bounceku 0.5s infinite;
 }
 
+.teskan {
+  color: red;
+}
+
 .animate-slide-up {
   will-change: all;
   animation-name: animate-slide-up;
@@ -61,13 +65,13 @@
 }
 
 .animate-scale-up {
-  will-change: transform;
+  will-change: all;
   animation-name: animate-scale-up;
   animation-duration: 150ms;
   animation-fill-mode: forwards;
 }
 .animate-scale-down {
-  will-change: transform;
+  will-change: all;
   animation-name: animate-scale-down;
   animation-duration: 150ms;
   animation-fill-mode: forwards;
