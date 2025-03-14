@@ -44,16 +44,18 @@ export const handleSubmit = (
     .then((responsenya) => {
       fetchUsers().then((response) => {
         const success = { ...responsenya.data, type: "submitted" };
-        setSuccess(success);
         setErrors({});
-        setUsers(response.data);
-        setSending(false);
+        setSuccess(success);
+
         setFormData({
           name: "",
           email: "",
           password: "",
         });
         clearInputData();
+
+        setUsers(response.data);
+        setSending(false);
       });
     })
     .catch(({ response }) => {
@@ -71,13 +73,13 @@ export const handleDelete = (
   {
     setSending,
     setSuccess,
+    success,
     setErrors,
     deleteUser,
     token,
     fetchUsers,
     setUsers,
-  },
-  isLast
+  }
 ) => {
   event.preventDefault();
 
@@ -86,19 +88,16 @@ export const handleDelete = (
   deleteUser(id, token)
     .then((responsenya) => {
       fetchUsers().then((response) => {
-        console.log(dom);
-        console.log(isLast);
+        const newSuccess = responsenya.data;
+
         document.getElementById(dom).classList.add("animate-scale-down");
-        console.log(isLast);
         console.log(document.getElementById(dom));
 
-        const success = responsenya.data;
-        setSuccess(success);
-
         setTimeout(() => {
+          setSuccess({ ...newSuccess, type: "deleted" });
           setUsers(response.data);
           setSending(false);
-        }, 10000);
+        }, 200);
       });
     })
     .catch(({ response }) => {

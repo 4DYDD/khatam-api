@@ -40,9 +40,9 @@ function UsersContainer({ props }) {
                 id={`${index}-${value.id}`}
                 className={`w-[26rem] relative overflow-hidden m-2 rounded-lg shadow shadow-gray-400 border border-gray-300 transall 
                       ${
-                        isLast && success?.type == "submitted"
-                          ? "animate-scale-up"
-                          : "bawadew"
+                        isLast &&
+                        success?.type == "submitted" &&
+                        "animate-scale-up"
                       }`}
               >
                 {/*  */}
@@ -240,13 +240,13 @@ function UsersContainer({ props }) {
                             {
                               setSending,
                               setSuccess,
+                              success,
                               setErrors,
                               deleteUser,
                               token,
                               fetchUsers,
                               setUsers,
-                            },
-                            success?.type == "submitted"
+                            }
                           );
                       }}
                       disabled={sending}
